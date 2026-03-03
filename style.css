@@ -1,0 +1,100 @@
+body {
+    background-color: pink;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: "plus jakarta sans", sans-serif !important;
+}
+
+.container {
+    flex: 1;
+}
+
+.intro {
+    background-color: #b6d5eb;
+}
+
+.h2 {
+    font-weight: 900;
+}
+
+.navbar {
+    height: 4.5rem;
+    background-color: #B4D0C7;
+}
+
+.nav-link {
+    color: #222222 !important;
+}
+
+.f-info-links a {
+    text-decoration: none;
+    color: #222222;
+    margin-right: 1rem;
+}
+
+.f-info-links a:hover {
+    text-decoration: underline;
+}
+
+.f-info {
+    display: flex;
+    height: 5rem;
+    background-color: #ebebeb;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: space-evenly;
+    text-align: center;
+}
+
+.f-info-links,
+.f-info-socials,
+.f-info-brand {
+    width: 100%;
+    vertical-align: middle;
+    display: flex;
+    justify-content: center;
+}
+
+.f-info-socials i {
+
+    font-size: 1.2rem;
+    margin-right: 1rem;
+}
+
+.btn-dark {
+    background-color: #ff6f61 !important;
+    border: none !important;
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+}
+
+.sbtns {
+    display: flex !important;
+    flex-direction: row !important;
+
+}
+
+/*Cards*/
+.card {
+    border: none !important;
+    margin-bottom: 2rem !important;
+}
+
+.card-img-top {
+    border-radius: 1rem !important;
+    width: 100% !important;
+    object-fit: cover !important;
+}
+
+.card-body {
+    padding: 0% !important;
+}
+
+.card-body p {
+    font-weight: 400;
+}
+
+.row a {
+    text-decoration: none !important;
+}
