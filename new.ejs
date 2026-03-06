@@ -3,38 +3,42 @@
         <div class="col-8 offset-2">
             <br /><br />
             <h3>Create a New Listing</h3>
-            <form method="POST" action="/listings">
+            <form method="POST" action="/listings" novalidate class="needs-validation">
                 <div class="mb-3">
-                    <label for="title" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="title" name="title" placeholder="Add a catchy title">
+                    <label for="title" class="form-label needs-validation">Title</label>
+                    <input type="text" class="form-control" id="title" name="title" placeholder="Add a catchy title"
+                        required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" name="description" placeholder=""></textarea>
+                    <label for="description" class="form-label needs-validation">Description</label>
+                    <textarea class="form-control" id="description" name="description" placeholder=""
+                        required></textarea>
                 </div>
 
                 <div class="mb-3">
-                    <label for="image" class="form-label">Image Link</label>
-                    <input type="text" class="form-control" id="image" name="image" placeholder="Enter image URL/Link">
+                    <label for="image" class="form-label needs-validation">Image Link</label>
+                    <input type="text" class="form-control" id="image" name="image" placeholder="Enter image URL/Link"
+                        required>
                 </div>
 
                 <div class="row">
                     <div class="mb-3 col-md-4">
-                        <label for="price" class="form-label">Price</label>
-                        <input type="number" class="form-control" id="price" name="price" placeholder="1200">
+                        <label for="price" class="form-label needs-validation">Price</label>
+                        <input type="number" class="form-control" id="price" name="price" placeholder="1200" required>
                     </div>
 
                     <div class="mb-3 col-md-8">
-                        <label for="country" class="form-label">Country</label>
-                        <input type="text" class="form-control" id="country" name="country" placeholder="India">
+                        <label for="country" class="form-label needs-validation">Country</label>
+                        <input type="text" class="form-control" id="country" name="country" placeholder="India"
+                            required>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="location" class="form-label">Location</label>
+                <div class="mb-3 needs-validation">
+                    <label for="location" class="form-label needs-validation">Location</label>
                     <input type="text" class="form-control" id="location" name="location"
-                        placeholder="Jaipur, Rajasthan">
+                        placeholder="Jaipur, Rajasthan" required>
                 </div>
 
                 <button class="btn btn-dark " type="submit">Add</button>
