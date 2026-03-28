@@ -22,12 +22,37 @@
             </div>
         </div>
 
-        <div class="col-8 offset-3 ">
-            <br />
+        <div style="margin-top:-3rem; display: flex; flex-direction: row;" class=" col-8 offset-3">
 
-            <a href="/listings/<%= listing._id %>/edit">Edit the Listing</a>
+
+            <button style="height: 2rem; padding: 0.15rem 1rem; border-radius: 0.51rem;"
+                href="/listings/<%= listing._id %>/edit" class="btn btn-dark">Edit </button>
             <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE">
-                <button class="sbtns" type="submit">Delete Listing</button>
+                <button class="btn"
+                    style=" margin: 1rem 0 0 1rem; border:1px solid black; height: 2rem; padding: 0.15rem 1rem; border-radius: 0.51rem;"
+                    onmouseenter="this.style.backgroundColor = '#ff0000'" onmouseleave="this.style.backgroundColor = ''"
+                    class="sbtns" type="submit">Delete
+                </button>
+            </form>
+        </div>
+
+        <div style="margin-top: -2rem;" class="col-8 offset-3">
+            <hr />
+            <h3>Feedback</h3>
+            <form action="/listings/<%= listing._id %>/feedback" method="POST">
+
+                <div>
+                    <label for=" rating">Rate this listing:</label>
+                    <input class="form-range" type="range" id="rating" name="review[rating]" min="0" max="5">
+                </div>
+                <div>
+                    <label for="comment">Leave a comment:</label>
+                    <textarea class="form-range" id="comment" name="review[comment]"></textarea>
+
+                </div>
+                <button class="btn btn-dark " type="submit"
+                    style="height: 2.3rem; padding: 0.375rem 0.75rem; border-radius: 1rem ;">Submit
+                </button>
             </form>
         </div>
 
