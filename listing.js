@@ -4,13 +4,13 @@ const Schema = mongoose.Schema;
 const listingSchema = new Schema({
     title: String,
     description: String,
-    image: { 
-    type: String,
-    default: "https://blog.3bee.com/en/nature-positive-regenerating-nature-for-the-future/",
-    set: (v) =>
-        v === ""
-            ? "https://blog.3bee.com/en/nature-positive-regenerating-nature-for-the-future/"
-            : v,
+    image: {
+        type: String,
+        default: "https://blog.3bee.com/en/nature-positive-regenerating-nature-for-the-future/",
+        set: (v) =>
+            v === ""
+                ? "https://blog.3bee.com/en/nature-positive-regenerating-nature-for-the-future/"
+                : v,
     },
     price: Number,
     location: String,
