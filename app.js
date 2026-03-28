@@ -9,6 +9,7 @@ const ejsMate = require("ejs-mate");
 const wrapAync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const { listingsSchema } = require("./schema.js");
+const Review = require("./models/review.js");
 
 //CONNECTING TO DB
 async function main() {
@@ -73,6 +74,14 @@ app.get("/listings/new", (req, res) => {
     res.render("listings/new");
 });
 
+//EDIT ROUTE
+app.get("/listings/:id/edit",
+    wrapAync(async (req, res) => {
+        let { id } = req.params;
+        const listing = await Listing.findById(id);
+        res.render("listings/edit", { listing });
+    }));
+
 //SHOW ROUTE
 app.get("/listings/:id", wrapAync(async (req, res) => {
     let { id } = req.params;
@@ -94,14 +103,6 @@ app.post("/listings",
         });
         await newListing.save();
         res.redirect("/listings");
-    }));
-
-//EDIT ROUTE
-app.get("/listings/:id/edit",
-    wrapAync(async (req, res) => {
-        let { id } = req.params;
-        const listing = await Listing.findById(id);
-        res.render("listings/edit", { listing });
     }));
 
 //UPDATE ROUTE
@@ -126,6 +127,20 @@ app.delete("/listings/:id", wrapAync(async (req, res) => {
     await Listing.findByIdAndDelete(id);
     res.redirect("/listings");
 }));
+
+//FEEDBACK ROUTE
+app.post("/listings/:id/feedback", async (req, res) => {
+    let listing = await Listing.findById(req.params.id);
+    let newReview = new Review(req.body.review);
+
+    listing.reviews.push(newReview);
+    await newReview.save();
+    await listing.save();
+
+    console.log("review added");
+    res.send("review added");
+});
+
 
 //ERROR HANDLING
 app.use((req, res, next) => {
