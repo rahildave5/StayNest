@@ -8,8 +8,9 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const { listingsSchema } = require("./schema.js");
+const { listingsSchema, reviewSchema } = require("./schema.js");
 const Review = require("./models/review.js");
+const cookieParser = require("cookie-parser");
 
 //CONNECTING TO DB
 async function main() {
@@ -30,12 +31,31 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cookieParser("thisisasecret"));
 
 //ROUTES
 app.get("/", (req, res) => {
     res.send("server connected");
 });
 
+//COOKIE TESTING ROUTE
+app.get("/getsignedcookie", (req, res) => {
+    res.cookie("made-in", "India", { signed: true });
+    res.send("Signed cookie sent");
+});
+
+app.get("/verifycookie", (req, res) => {
+    console.log(req.signedCookies);
+    res.send("Check the console for cookies");
+});
+
+app.get("/getcookies", (req, res) => {
+    res.cookie("made-in", "India");
+    res.cookie("greet", "Namaste");
+    res.send("Cookies sent");
+});
+
+//VALIDATION MIDDLEWARE
 const validateListing = (req, res, next) => {
     const { error } = listingsSchema.validate(req.body);
     if (error) {
@@ -46,6 +66,19 @@ const validateListing = (req, res, next) => {
         next();
     }
 };
+
+//VALIDATION MIDDLEWARE FOR REVIEWS
+const validateReviews = (req, res, next) => {
+    const { error } = reviewSchema.validate(req.body);
+    if (error) {
+        let errorMessage = error.details.map(el => el.message).join(",");
+        throw new ExpressError(400, errorMessage);
+    }
+    else {
+        next();
+    }
+};
+
 
 //TESTING ROUTE
 app.get("/testing", wrapAync(async (req, res) => {
@@ -85,7 +118,7 @@ app.get("/listings/:id/edit",
 //SHOW ROUTE
 app.get("/listings/:id", wrapAync(async (req, res) => {
     let { id } = req.params;
-    const listing = await Listing.findById(id);
+    const listing = await Listing.findById(id).populate("reviews");
     res.render("listings/show", { listing });
 }));
 
@@ -128,8 +161,16 @@ app.delete("/listings/:id", wrapAync(async (req, res) => {
     res.redirect("/listings");
 }));
 
+//DELETE REVIEWS ROUTE
+app.delete("/listings/:listingId/reviews/:reviewId", wrapAync(async (req, res) => {
+    let { listingId, reviewId } = req.params;
+    await Listing.findByIdAndUpdate(listingId, { $pull: { reviews: reviewId } });
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/listings/${listingId}`);
+}));
+
 //FEEDBACK ROUTE
-app.post("/listings/:id/feedback", async (req, res) => {
+app.post("/listings/:id/feedback", validateReviews, wrapAync(async (req, res) => {
     let listing = await Listing.findById(req.params.id);
     let newReview = new Review(req.body.review);
 
@@ -138,8 +179,9 @@ app.post("/listings/:id/feedback", async (req, res) => {
     await listing.save();
 
     console.log("review added");
-    res.send("review added");
-});
+    res.redirect(`/listings/${req.params.id}`);
+})
+);
 
 
 //ERROR HANDLING
@@ -148,9 +190,8 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-    let { statusCode, message } = err;
-    res.render("error.ejs", { errMessage: message });
-    // res.status(statusCode).send(message);
+    let { statusCode = 500, message } = err;
+    res.status(statusCode).render("error.ejs", { errMessage: message });
 });
 
 //START SERVER
