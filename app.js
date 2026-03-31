@@ -11,6 +11,8 @@ const ExpressError = require("./utils/ExpressError.js");
 const { listingsSchema, reviewSchema } = require("./schema.js");
 const Review = require("./models/review.js");
 const cookieParser = require("cookie-parser");
+const connect = require("connect-flash");
+const session = require("express-session");
 
 //CONNECTING TO DB
 async function main() {
@@ -32,6 +34,20 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser("thisisasecret"));
+
+const sessionOptions = {
+    secret:
+        "thisisaverysecretstringthatshouldbereplacedwithsomethingelse",
+    resave: false,
+    saveUninitialized: true,
+    cookies: {
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7, //1 week
+        maxAge: 1000 * 60 * 60 * 24 * 7, //1 week
+
+    }
+};
+
 
 //ROUTES
 app.get("/", (req, res) => {
@@ -183,18 +199,5 @@ app.post("/listings/:id/feedback", validateReviews, wrapAync(async (req, res) =>
 })
 );
 
-
-//ERROR HANDLING
-app.use((req, res, next) => {
-    next(new ExpressError(404, "Page Not Found!"));
-});
-
-app.use((err, req, res, next) => {
-    let { statusCode = 500, message } = err;
-    res.status(statusCode).render("error.ejs", { errMessage: message });
-});
-
-//START SERVER
-app.listen(5050, () => {
-    console.log("server is running on port 5050");
-});
+//EXPORT APP
+module.exports = app;
