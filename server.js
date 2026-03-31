@@ -5,8 +5,6 @@ const app = require("../app.js");
 const connect = require("connect-flash");
 const ExpressError = require("../utils/ExpressError.js");
 
-
-
 app.use(session(sessionOptions));
 
 app.get("/register", (req, res) => {
