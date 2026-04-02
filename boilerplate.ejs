@@ -19,16 +19,17 @@
     <%- include("../includes/navbar.ejs") %>
 
         <div class="intro">
-            <h2>Welcome to StayNest!</h2>
-            <p>Your one-stop destination for cozy and affordable stays around the world. Whether you're looking for a
+            <h2 class="display-5" style="margin-left: 30rem;">Welcome to <b style="color: #ff6f61;">StayNest!</b></h2>
+            <p style="text-align: center; "> Your one-stop destination for cozy and affordable stays around the world.
+                Whether you're looking for a
                 charming cottage, a modern apartment, or a unique treehouse, StayNest has something for everyone.
                 Explore our listings and find your perfect getaway today!</p>
         </div>
 
 
 
-        <div class="container mt-4">
-            <% if (success && success.length> 0) { %>
+        <div class=" container mt-4">
+            <% if (typeof success !=="undefined" && success && success.length> 0) { %>
                 <div class="alert alert-success alert-dismissible fade show" role="alert"
                     style="position: relative; z-index: 1000;">
                     <strong>Success!</strong>
@@ -37,7 +38,7 @@
                 </div>
                 <% } %>
 
-                    <% if (error && error.length> 0) { %>
+                    <% if (typeof error !=="undefined" && error && error.length> 0) { %>
                         <div class="alert alert-danger alert-dismissible fade show" role="alert"
                             style="position: relative; z-index: 1000;">
                             <strong>Error!</strong>
