@@ -5,8 +5,6 @@ const User = require("../models/user.js");
 const wrapAsync = require("../utils/wrapAsync.js");
 const passport = require("passport");
 
-
-
 router.get
     ("/login", (req, res) => {
         res.render("users/login.ejs");
