@@ -5,7 +5,6 @@ const User = require("../models/user.js");
 const wrapAync = require("../utils/wrapAsync.js");
 const wrapAsync = require("../utils/wrapAsync.js");
 
-
 router.get
     ("/signup", (req, res) => {
         res.render("users/signup.ejs");
