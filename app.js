@@ -18,6 +18,7 @@ const LocalStrategy = require("passport-local");
 const user = require("./models/user.js");
 const signupRoutes = require("./models/signup.js");
 const loginRoutes = require("./models/login.js");
+const { isLoggedIn } = require("./middleware.js");
 
 //CONNECTING TO DB
 async function main() {
@@ -64,6 +65,7 @@ passport.deserializeUser(user.deserializeUser());
 app.use((req, res, next) => {
     res.locals.success = req.flash("success") || [];
     res.locals.error = req.flash("error") || [];
+    res.locals.currentUser = req.user;
     next();
 });
 
@@ -106,12 +108,12 @@ app.get("/", (req, res) => {
 //INDEX ROUTE
 app.get("/listings", wrapAsync(async (req, res) => {
     const allListings = await Listing.find({});
-    res.render("listings/index", { allListings });
+    res.render("listings/index.ejs", { allListings });
 }));
 
 //NEW ROUTE
-app.get("/listings/new", (req, res) => {
-    res.render("listings/new");
+app.get("/listings/new", isLoggedIn, (req, res) => {
+    res.render("listings/new.ejs");
 });
 
 //CREATE ROUTE
@@ -123,7 +125,7 @@ app.post("/listings", validateListing, wrapAsync(async (req, res) => {
 }));
 
 //EDIT ROUTE
-app.get("/listings/:id/edit", wrapAsync(async (req, res) => {
+app.get("/listings/:id/edit", isLoggedIn, wrapAsync(async (req, res) => {
     let { id } = req.params;
     const listing = await Listing.findById(id);
 
@@ -146,7 +148,7 @@ app.get("/listings/:id", wrapAsync(async (req, res) => {
 }));
 
 //UPDATE ROUTE
-app.put("/listings/:id", validateListing, wrapAsync(async (req, res) => {
+app.put("/listings/:id", isLoggedIn, validateListing, wrapAsync(async (req, res) => {
     let { id } = req.params;
     await Listing.findByIdAndUpdate(id, req.body.listings);
     req.flash("success", "Listing updated successfully!");
@@ -154,7 +156,7 @@ app.put("/listings/:id", validateListing, wrapAsync(async (req, res) => {
 }));
 
 //DELETE ROUTE
-app.delete("/listings/:id", wrapAsync(async (req, res) => {
+app.delete("/listings/:id", isLoggedIn, wrapAsync(async (req, res) => {
     let { id } = req.params;
     await Listing.findByIdAndDelete(id);
     req.flash("success", "Listing deleted successfully!");
@@ -162,7 +164,7 @@ app.delete("/listings/:id", wrapAsync(async (req, res) => {
 }));
 
 //DELETE REVIEWS ROUTE
-app.delete("/listings/:listingId/reviews/:reviewId", wrapAsync(async (req, res) => {
+app.delete("/listings/:listingId/reviews/:reviewId", isLoggedIn, wrapAsync(async (req, res) => {
     let { listingId, reviewId } = req.params;
     await Listing.findByIdAndUpdate(listingId, { $pull: { reviews: reviewId } });
     await Review.findByIdAndDelete(reviewId);
@@ -171,7 +173,7 @@ app.delete("/listings/:listingId/reviews/:reviewId", wrapAsync(async (req, res) 
 }));
 
 //FEEDBACK ROUTE
-app.post("/listings/:id/feedback", validateReviews, wrapAsync(async (req, res) => {
+app.post("/listings/:id/feedback", isLoggedIn, validateReviews, wrapAsync(async (req, res) => {
     let listing = await Listing.findById(req.params.id);
     let newReview = new Review(req.body.review);
     listing.reviews.push(newReview);
@@ -180,5 +182,17 @@ app.post("/listings/:id/feedback", validateReviews, wrapAsync(async (req, res) =
     req.flash("success", "Review added successfully!");
     res.redirect(`/listings/${req.params.id}`);
 }));
+
+//LOGOUT ROUTE
+app.get("/logout", (req, res) => {
+    req.logout((err) => {
+        if (err) {
+            return next(err);
+        }
+
+        req.flash("success", "Logged out successfully!");
+        res.redirect("/listings");
+    });
+});
 
 module.exports = { app, validateListing, validateReviews };
