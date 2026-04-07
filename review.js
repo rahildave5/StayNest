@@ -1,22 +1,25 @@
-const { time } = require('console');
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const Review = require("../models/review.js");
+const Listing = require("../models/listing.js");
+const wrapAsync = require("../utils/wrapAsync.js");
+const { reviewSchema } = require("../schema.js");
+const ExpressError = require("../utils/ExpressError.js");
 
-const reviewSchema = new Schema({
-    comment: {
-        type: String,
-        required: true
-    },
-    rating: {
-        type: Number,
-        min: 1,
-        max: 5,
-        required: true,
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now(),
-    },
-});
+module.exports.createReview = async (req, res) => {
+    let listing = await Listing.findById(req.params.id);
+    let newReview = new Review(req.body.review);
+    newReview.author = req.user._id;
+    newReview.username = req.user.username;
+    listing.reviews.push(newReview);
+    await newReview.save();
+    await listing.save();
+    req.flash("success", "Review added successfully!");
+    res.redirect(`/listings/${req.params.id}`);
+};
 
-module.exports = mongoose.model('Review', reviewSchema);
+module.exports.deleteReview = async (req, res) => {
+    let { listingId, reviewId } = req.params;
+    await Listing.findByIdAndUpdate(listingId, { $pull: { reviews: reviewId } });
+    await Review.findByIdAndDelete(reviewId);
+    req.flash("success", "Review deleted!");
+    res.redirect(`/listings/${listingId}`);
+};
