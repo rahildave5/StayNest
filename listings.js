@@ -3,7 +3,6 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const { listingsSchema } = require("../schema.js");
 const ExpressError = require("../utils/ExpressError.js");
 
-
 module.exports.index = async (req, res) => {
     const allListings = await Listing.find({});
     res.render("listings/index.ejs", { allListings });
