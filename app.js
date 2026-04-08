@@ -1,4 +1,5 @@
 //REQUIRED PACKAGES
+require('dotenv').config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -18,7 +19,14 @@ const LocalStrategy = require("passport-local");
 const user = require("./models/user.js");
 const signupRoutes = require("./models/signup.js");
 const loginRoutes = require("./models/login.js");
-const { isLoggedIn } = require("./middleware.js");
+const { isLoggedIn, isReviewAuthor } = require("./middleware.js");
+const listingController = require("./controllers/listings.js");
+const reviewController = require("./controllers/review.js");
+const { createReview, deleteReview } = require("./controllers/review.js");
+const controllers = require("./controllers/user.js");
+const multer = require("multer");
+const storage = require("./cloudConfig.js");
+const upload = multer({ storage });
 
 //CONNECTING TO DB
 async function main() {
@@ -91,6 +99,10 @@ const validateListing = (req, res, next) => {
 };
 
 const validateReviews = (req, res, next) => {
+    req.body.review = req.body.review || {};
+    if (req.user && req.user.username) {
+        req.body.review.username = req.user.username;
+    }
     const { error } = reviewSchema.validate(req.body);
     if (error) {
         let errorMessage = error.details.map(el => el.message).join(",");
@@ -106,10 +118,7 @@ app.get("/", (req, res) => {
 });
 
 //INDEX ROUTE
-app.get("/listings", wrapAsync(async (req, res) => {
-    const allListings = await Listing.find({});
-    res.render("listings/index.ejs", { allListings });
-}));
+app.get("/listings", wrapAsync(listingController.index));
 
 //NEW ROUTE
 app.get("/listings/new", isLoggedIn, (req, res) => {
@@ -117,79 +126,35 @@ app.get("/listings/new", isLoggedIn, (req, res) => {
 });
 
 //CREATE ROUTE
-app.post("/listings", validateListing, wrapAsync(async (req, res) => {
-    const newListing = new Listing(req.body.listings);
-    await newListing.save();
-    req.flash("success", "Listing created successfully!");
-    res.redirect("/listings");
-}));
+app.post("/listings", isLoggedIn, upload.single("image"), validateListing, wrapAsync(listingController.createListing));
 
 //EDIT ROUTE
-app.get("/listings/:id/edit", isLoggedIn, wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id);
-
-    if (!listing) {
-        req.flash("error", "Listing not found!");
-        return res.redirect("/");
-    }
-    res.render("listings/edit", { listing });
-}));
+app.get("/listings/:id/edit", isLoggedIn, wrapAsync(listingController.editListing));
 
 //SHOW ROUTE
-app.get("/listings/:id", wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id).populate("reviews");
-    if (!listing) {
-        req.flash("error", "Listing not found!");
-        return res.redirect("/");
-    }
-    res.render("listings/show", { listing });
-}));
+app.get("/listings/:id", wrapAsync(listingController.showListing));
+
+// Prevent direct/cached GET requests to feedback endpoint.
+app.get("/listings/:id/feedback", isLoggedIn, (req, res) => {
+    req.flash("error", "Please submit feedback using the form.");
+    res.redirect(`/listings/${req.params.id}`);
+});
 
 //UPDATE ROUTE
-app.put("/listings/:id", isLoggedIn, validateListing, wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    await Listing.findByIdAndUpdate(id, req.body.listings);
-    req.flash("success", "Listing updated successfully!");
-    res.redirect(`/listings/${id}`);
-}));
-
-//DELETE ROUTE
-app.delete("/listings/:id", isLoggedIn, wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    await Listing.findByIdAndDelete(id);
-    req.flash("success", "Listing deleted successfully!");
-    res.redirect("/listings");
-}));
-
-//DELETE REVIEWS ROUTE
-app.delete("/listings/:listingId/reviews/:reviewId", isLoggedIn, wrapAsync(async (req, res) => {
-    let { listingId, reviewId } = req.params;
-    await Listing.findByIdAndUpdate(listingId, { $pull: { reviews: reviewId } });
-    await Review.findByIdAndDelete(reviewId);
-    req.flash("success", "Review deleted!");
-    res.redirect(`/listings/${listingId}`);
-}));
+app.put("/listings/:id", isLoggedIn, validateListing, wrapAsync(listingController.updateListing));
 
 //FEEDBACK ROUTE
-app.post("/listings/:id/feedback", isLoggedIn, validateReviews, wrapAsync(async (req, res) => {
-    let listing = await Listing.findById(req.params.id);
-    let newReview = new Review(req.body.review);
-    listing.reviews.push(newReview);
-    await newReview.save();
-    await listing.save();
-    req.flash("success", "Review added successfully!");
-    res.redirect(`/listings/${req.params.id}`);
-}));
+app.post("/listings/:id/feedback", isLoggedIn, validateReviews, wrapAsync(reviewController.createReview));
+
+//DELETE REVIEWS ROUTE
+app.delete("/listings/:listingId/reviews/:reviewId", isLoggedIn, isReviewAuthor, wrapAsync(reviewController.deleteReview));
 
 //LOGOUT ROUTE
-app.get("/logout", (req, res) => {
+app.get("/logout", (req, res, next) => {
     req.logout((err) => {
         if (err) {
             return next(err);
         }
-
         req.flash("success", "Logged out successfully!");
         res.redirect("/listings");
     });
