@@ -185,4 +185,5 @@ app.get("/logout", (req, res, next) => {
     });
 });
 
+connectDB().catch(err => console.error("DB connection error:", err.message));
 module.exports = app;
