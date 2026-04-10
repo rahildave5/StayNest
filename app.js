@@ -26,7 +26,8 @@ const { createReview, deleteReview } = require("./controllers/review.js");
 const controllers = require("./controllers/user.js");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
-const MongoStore = require("connect-mongo");
+const connectMongo = require("connect-mongo");
+const mongoStore = connectMongo.default || connectMongo.MongoStore || connectMongo;
 
 //CONNECTING TO DB
 const LOCAL_DB_URL = "mongodb://127.0.0.1:27017/bookBNB";
@@ -54,8 +55,8 @@ app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 
-const store = MongoStore.create({
-    mongoUrl: ATLAS_DB_URL,
+const store = mongoStore.create({
+    mongoUrl: ATLAS_DB_URL || LOCAL_DB_URL,
     crypto: {
         secret: process.env.SECRET,
     },
@@ -69,6 +70,7 @@ store.on("error", function (e) {
 // SESSION — must come BEFORE flash()
 const sessionOptions = {
     secret: process.env.SECRET,
+    store,
     resave: false,
     saveUninitialized: true,
     cookie: {
