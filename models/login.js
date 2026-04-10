@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 const passport = require("passport");
-const { saveRedirectUrl } = require("../auth-middleware.js");
+const { saveRedirectUrl } = require("../utils/auth-middleware.js");
 const controllers = require("../controllers/user.js");
 const { renderLoginForm } = require("../controllers/user.js");
 

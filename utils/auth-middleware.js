@@ -1,4 +1,4 @@
-const Review = require("./models/review.js");
+const Review = require("../models/review");
 
 module.exports.isLoggedIn = (req, res, next) => {
     console.log(req.path, "..", req.originalUrl);
