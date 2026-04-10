@@ -25,7 +25,8 @@ const reviewController = require("./controllers/review.js");
 const { createReview, deleteReview } = require("./controllers/review.js");
 const controllers = require("./controllers/user.js");
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const storage = require("./cloudConfig.js");
+const upload = multer({ storage });
 const connectMongo = require("connect-mongo");
 const mongoStore = connectMongo.default || connectMongo.MongoStore || connectMongo;
 
