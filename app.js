@@ -25,10 +25,11 @@ const reviewController = require("./controllers/review.js");
 const { createReview, deleteReview } = require("./controllers/review.js");
 const controllers = require("./controllers/user.js");
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const storage = require("./cloudConfig.js");
+const upload = multer({ storage });
 const connectMongo = require("connect-mongo");
 const mongoStore = connectMongo.default || connectMongo.MongoStore || connectMongo;
-const mongoose = require("mongoose");
+
 
 //CONNECTING TO DB
 const LOCAL_DB_URL = "mongodb://127.0.0.1:27017/bookBNB";
@@ -184,4 +185,5 @@ app.get("/logout", (req, res, next) => {
     });
 });
 
-module.exports = { app, validateListing, validateReviews, connectDB };
+connectDB().catch(err => console.error("DB connection error:", err.message));
+module.exports = app;
