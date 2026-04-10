@@ -1,0 +1,182 @@
+<% layout("layouts/boilerplate.ejs") %>
+
+    <style>
+        #filter {
+            display: flex;
+            flex-wrap: wrap;
+
+
+        }
+
+        .filter {
+            text-align: center;
+            cursor: pointer;
+            margin-right: 2rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .fa-solid {
+            height: 24px;
+            width: 24px;
+        }
+
+        .filter-text {
+
+            margin-top: -0.2rem;
+        }
+
+        .filter:hover {
+            cursor: pointer;
+            opacity: 1;
+        }
+
+        .tax-info {
+            font-size: 0.8rem;
+            color: gray;
+            display: none;
+        }
+
+        .tax-toggle {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            padding: 0.25rem 0.6rem;
+            border: 1px solid #d9d9d9;
+            height: 2rem;
+            width: 11rem;
+            border-radius: 999px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .tax-toggle .form-switch {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .tax-toggle .form-check-input {
+            margin: 0;
+            float: none;
+            width: 1.9rem;
+            height: 1rem;
+            cursor: pointer;
+            border: 1px solid #ff6f61;
+            background-color: #fff7f4;
+            box-shadow: none;
+        }
+
+        .tax-toggle .form-check-input:checked {
+            background-color: #ff6f61;
+            border-color: #ff6f61;
+        }
+
+        .tax-toggle .form-check-input:focus {
+            box-shadow: 0 0 0 0.12rem rgba(255, 111, 97, 0.25);
+        }
+
+        .tax-toggle .form-check-label {
+            margin-left: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #444;
+            cursor: pointer;
+            line-height: 1;
+            white-space: nowrap;
+        }
+    </style>
+
+    <div id="filter">
+        <div class="filter">
+            <i class="fa-solid fa-fire"></i>
+            <p>Trending</p>
+        </div>
+        <div class="filter">
+            <i class="fa-solid fa-bed"></i>
+            <p>Rooms</p>
+        </div>
+        <div class="filter">
+            <i class="fa-solid fa-cloud-sun"></i>
+            <p>Amazing views</p>
+        </div>
+        <div class="filter">
+            <i class="fa-solid fa-monument"></i>
+            <p>Iconic Cities</p>
+        </div>
+        <div class="filter">
+            <span class="material-symbols-outlined">
+                surfing
+            </span>
+            <p class="filter-text">Surfing</p>
+        </div>
+        <div class="filter">
+            <i class="fa-solid fa-water-ladder"></i>
+            <p>Amazing Pools</p>
+        </div>
+        <div class="filter">
+            <i class="fa-solid fa-person-swimming"></i>
+            <p>Beach</p>
+        </div>
+        <div class="filter">
+            <i class="fa-solid fa-house"></i>
+            <p>Cabins</p>
+        </div>
+        <div class="filter">
+            <i class="fa-regular fa-face-surprise"></i>
+            <p>OMG!</p>
+        </div>
+        <div class="filter">
+            <i class="fa-solid fa-house-flood-water"></i>
+            <p>Lakefront</p>
+        </div>
+
+        <div class="tax-toggle">
+            <div class="form-check-reverse form-switch">
+                <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch" switch>
+                <label class="form-check-label" for="checkNativeSwitch">
+                    With Taxes and Fees
+                </label>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-3">
+        <% for(let listing of allListings) { %>
+            <a class="card-tag" href="/listings/<%= listing._id %>">
+                <div class="card" style="width: 18rem;">
+                    <img src="<%= listing.image.url %>" class="card-img-top" alt="listing image" style="height: 20rem;">
+                    <div class="card-body">
+                        <p class="card-text">
+                            <b>
+                                <%= listing.title %><br />
+                            </b>
+                            <%= listing.location %>, <%= listing.country %><br />
+                                    <b>&#x24;<%= listing.price %>/night</b>
+                                    <i class="tax-info">&nbsp;&nbsp;+18% GST</i>
+                        </p>
+                    </div>
+                </div>
+            </a>
+            <% } %>
+    </div>
+
+
+    <script>
+        const taxToggle = document.querySelector("#checkNativeSwitch");
+        const taxInfoElements = document.querySelectorAll(".tax-info");
+
+        const updateTaxVisibility = () => {
+            taxInfoElements.forEach((info) => {
+                info.style.display = taxToggle.checked ? "inline" : "none";
+            });
+        };
+
+        if (taxToggle) {
+            taxToggle.addEventListener("change", updateTaxVisibility);
+            updateTaxVisibility();
+        }
+    </script>
