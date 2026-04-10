@@ -2,8 +2,6 @@ const Listing = require("../models/listing");
 const wrapAsync = require("../utils/wrapAsync.js");
 const { listingsSchema } = require("../schema.js");
 const ExpressError = require("../utils/ExpressError.js");
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
 
 
 module.exports.index = async (req, res) => {
