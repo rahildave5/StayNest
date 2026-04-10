@@ -185,4 +185,4 @@ app.get("/logout", (req, res, next) => {
     });
 });
 
-module.exports = { app, validateListing, validateReviews, connectDB };
+module.exports = app;
