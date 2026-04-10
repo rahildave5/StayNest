@@ -25,16 +25,25 @@ const reviewController = require("./controllers/review.js");
 const { createReview, deleteReview } = require("./controllers/review.js");
 const controllers = require("./controllers/user.js");
 const multer = require("multer");
-const storage = require("./cloudConfig.js");
-const upload = multer({ storage });
+const upload = multer({ dest: "uploads/" });
+const MongoStore = require("connect-mongo");
 
 //CONNECTING TO DB
-async function main() {
-    await mongoose.connect("mongodb://127.0.0.1:27017/bookBNB");
+const LOCAL_DB_URL = "mongodb://127.0.0.1:27017/bookBNB";
+const ATLAS_DB_URL = process.env.ATLAS_DB;
+
+async function connectDB() {
+    const primaryDbUrl = ATLAS_DB_URL;
+    try {
+        await mongoose.connect(primaryDbUrl, { serverSelectionTimeoutMS: 5000 });
+        console.log("connected to DB");
+    } catch (err) {
+        if (!ATLAS_DB_URL) throw err;
+        console.warn("Atlas DB connection failed, trying local MongoDB...");
+        await mongoose.connect(LOCAL_DB_URL, { serverSelectionTimeoutMS: 5000 });
+        console.log("connected to local DB");
+    }
 }
-main()
-    .then(() => console.log("connected to DB"))
-    .catch((err) => console.log(err));
 
 //MIDDLEWARE
 app.set("view engine", "ejs");
@@ -45,9 +54,21 @@ app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 
+const store = MongoStore.create({
+    mongoUrl: ATLAS_DB_URL,
+    crypto: {
+        secret: process.env.SECRET,
+    },
+    touchAfter: 24 * 3600 // time period in seconds
+});
+
+store.on("error", function (e) {
+    console.log("SESSION STORE ERROR", e);
+});
+
 // SESSION — must come BEFORE flash()
 const sessionOptions = {
-    secret: "thisisaverysecretstringthatshouldbereplacedwithsomethingelse",
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -160,4 +181,4 @@ app.get("/logout", (req, res, next) => {
     });
 });
 
-module.exports = { app, validateListing, validateReviews };
+module.exports = { app, validateListing, validateReviews, connectDB };
