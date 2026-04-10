@@ -7,7 +7,7 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const { signup, renderSignupForm } = require("../controllers/user.js");
 const controllers = require("../controllers/user.js");
 const { render } = require("ejs");
-
+const { saveRedirectUrl } = require("../utils/auth-middleware.js");
 router.get
     ("/signup", renderSignupForm);
 
