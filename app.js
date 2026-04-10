@@ -19,7 +19,7 @@ const LocalStrategy = require("passport-local");
 const user = require("./models/user.js");
 const signupRoutes = require("./models/signup.js");
 const loginRoutes = require("./models/login.js");
-const { isLoggedIn, isReviewAuthor } = require("./middleware.js");
+const { isLoggedIn, isReviewAuthor } = require("./utils/auth-middleware.js");
 const listingController = require("./controllers/listings.js");
 const reviewController = require("./controllers/review.js");
 const { createReview, deleteReview } = require("./controllers/review.js");
@@ -28,6 +28,7 @@ const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 const connectMongo = require("connect-mongo");
 const mongoStore = connectMongo.default || connectMongo.MongoStore || connectMongo;
+const mongoose = require("mongoose");
 
 //CONNECTING TO DB
 const LOCAL_DB_URL = "mongodb://127.0.0.1:27017/bookBNB";
