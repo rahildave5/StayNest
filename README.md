@@ -1,3 +1,3 @@
 # StayNest
 
-Airbnb Clone web app 
+Airbnb Clone full-stack web app 
