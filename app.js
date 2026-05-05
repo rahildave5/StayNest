@@ -107,13 +107,6 @@ app.use((req, res, next) => {
 app.use("/", signupRoutes);
 app.use("/", loginRoutes);
 
-// // DEMO USER ROUTE
-// app.get("/demo_user", async (req, res) => {
-//     let demoUser = new user({ username: "demo_user", email: "demo@example.com" });
-//     const registeredUser = await user.register(demoUser, "helloworld");
-//     res.send(registeredUser);
-// });
-
 //VALIDATION MIDDLEWARE
 const validateListing = (req, res, next) => {
     const { error } = listingsSchema.validate(req.body);
