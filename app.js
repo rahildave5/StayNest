@@ -34,17 +34,27 @@ const mongoStore = connectMongo.default || connectMongo.MongoStore || connectMon
 //CONNECTING TO DB
 const LOCAL_DB_URL = "mongodb://127.0.0.1:27017/bookBNB";
 const ATLAS_DB_URL = process.env.ATLAS_DB;
+const isProduction = process.env.NODE_ENV === "production";
+const PRIMARY_DB_URL = ATLAS_DB_URL || LOCAL_DB_URL;
+
+let cachedConnection = null;
 
 async function connectDB() {
-    const primaryDbUrl = ATLAS_DB_URL;
+    if (cachedConnection && mongoose.connection.readyState === 1) {
+        return cachedConnection;
+    }
     try {
-        await mongoose.connect(primaryDbUrl, { serverSelectionTimeoutMS: 5000 });
+        await mongoose.connect(PRIMARY_DB_URL, { serverSelectionTimeoutMS: 5000 });
+        cachedConnection = mongoose.connection;
         console.log("connected to DB");
+        return cachedConnection;
     } catch (err) {
-        if (!ATLAS_DB_URL) throw err;
-        console.warn("Atlas DB connection failed, trying local MongoDB...");
+        if (isProduction || !LOCAL_DB_URL) throw err;
+        console.warn("Primary DB connection failed, trying local MongoDB...");
         await mongoose.connect(LOCAL_DB_URL, { serverSelectionTimeoutMS: 5000 });
+        cachedConnection = mongoose.connection;
         console.log("connected to local DB");
+        return cachedConnection;
     }
 }
 
@@ -58,7 +68,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 
 const store = mongoStore.create({
-    mongoUrl: ATLAS_DB_URL || LOCAL_DB_URL,
+    mongoUrl: PRIMARY_DB_URL,
     crypto: {
         secret: process.env.SECRET,
     },
@@ -77,6 +87,7 @@ const sessionOptions = {
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
+        secure: isProduction,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // 1 week
         maxAge: 1000 * 60 * 60 * 24 * 7,
     }
@@ -185,5 +196,4 @@ app.get("/logout", (req, res, next) => {
     });
 });
 
-connectDB().catch(err => console.error("DB connection error:", err.message));
-module.exports = app;
+module.exports = { app, validateListing, validateReviews, connectDB };
