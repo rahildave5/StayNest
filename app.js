@@ -35,7 +35,7 @@ const mongoStore = connectMongo.default || connectMongo.MongoStore || connectMon
 const LOCAL_DB_URL = "mongodb://127.0.0.1:27017/bookBNB";
 const ATLAS_DB_URL = process.env.ATLAS_DB;
 const isProduction = process.env.NODE_ENV === "production";
-const PRIMARY_DB_URL = ATLAS_DB_URL || LOCAL_DB_URL;
+const PRIMARY_DB_URL = isProduction && ATLAS_DB_URL ? ATLAS_DB_URL : LOCAL_DB_URL;
 
 let cachedConnection = null;
 
