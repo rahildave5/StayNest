@@ -1,6 +1,6 @@
 const { app, connectDB } = require("./app.js");
 
-const port = 5050;
+const port = process.env.PORT || 5050;
 
 connectDB()
     .then(() => {
