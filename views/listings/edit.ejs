@@ -1,8 +1,13 @@
 <% layout("/layouts/boilerplate.ejs") %>
-    <div class="row">
-        <div class="col-8 offset-2">
-            <br /><br />
-            <h3>Edit Listing</h3>
+
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div style="background:#fff; border-radius:1.25rem; padding:2rem; box-shadow:0 6px 24px rgba(0,0,0,0.09);">
+            <h2 style="font-weight:800; font-size:1.4rem; letter-spacing:-0.02em; margin-bottom:0.25rem;">
+                <i class="fa-solid fa-pen-to-square me-2" style="color:#ff6f61;"></i>Edit Listing
+            </h2>
+            <p style="color:#aaa; font-size:0.85rem; margin-bottom:1.5rem;">Update the details for your listing.</p>
+
             <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" class="needs-validation"
                 enctype="multipart/form-data" novalidate>
                 <div class="mb-3">
@@ -11,38 +16,41 @@
                         name="listings[title]" placeholder="Add a catchy title">
                 </div>
 
-                <div class="mb-3 needs-validation">
-                    <label for=" description" class="form-label">Description</label>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
                     <textarea class="form-control" id="description" name="listings[description]"
-                        placeholder=""><%= listing.description %></textarea>
+                        rows="4"><%= listing.description %></textarea>
                 </div>
 
-                <div class="mb-3 needs-validation">
-                    <label for=" image" class="form-label">Image</label>
-                    <input type="file" class="form-control" id="image" name="listings[image]">
+                <div class="mb-3">
+                    <label for="image" class="form-label">Replace Image</label>
+                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                    <div class="form-text" style="font-size:0.78rem; color:#aaa;">Leave blank to keep the current image.</div>
                 </div>
 
-                <div class="row needs-validation">
-                    <div class=" mb-3 col-md-4">
-                        <label for="price" class="form-label">Price</label>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label for="price" class="form-label">Price per night ($)</label>
                         <input type="number" class="form-control" id="price" value="<%= listing.price %>"
-                            name="listings[price]" placeholder="1200">
+                            name="listings[price]" placeholder="1200" min="0">
                     </div>
-
-                    <div class="mb-3 col-md-8 needs-validation">
-                        <label for=" country" class="form-label">Country</label>
+                    <div class="col-md-8">
+                        <label for="country" class="form-label">Country</label>
                         <input type="text" value="<%= listing.country %>" class="form-control" id="country"
                             name="listings[country]" placeholder="India">
                     </div>
                 </div>
 
-                <div class="mb-3 needs-validation">
-                    <label for=" location" class="form-label">Location</label>
+                <div class="mb-4">
+                    <label for="location" class="form-label">Location</label>
                     <input type="text" value="<%= listing.location %>" class="form-control" id="location"
                         name="listings[location]" placeholder="Jaipur, Rajasthan">
                 </div>
 
-                <button class="btn btn-dark " type="submit">Edit</button>
+                <button class="btn btn-dark w-100" type="submit" style="border-radius:0.6rem; padding:0.65rem;">
+                    <i class="fa-solid fa-floppy-disk me-1"></i>Save Changes
+                </button>
             </form>
         </div>
     </div>
+</div>
