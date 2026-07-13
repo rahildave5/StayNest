@@ -1,30 +1,43 @@
 <% layout("/layouts/boilerplate.ejs") %>
-    <div class="row">
-        <div class="col-8 offset-2">
-            <br /><br />
-            <h3>Sign Up</h3>
+
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-12 col-sm-9 col-md-6 col-lg-5">
+        <div style="background:#fff; border-radius:1.25rem; padding:2rem; box-shadow:0 6px 24px rgba(0,0,0,0.09);">
+            <div class="text-center mb-4">
+                <div style="width:3rem; height:3rem; background:rgba(255,111,97,0.1); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin-bottom:0.75rem;">
+                    <i class="fa-solid fa-user-plus" style="color:#ff6f61; font-size:1.2rem;"></i>
+                </div>
+                <h2 style="font-weight:800; font-size:1.4rem; letter-spacing:-0.02em; margin:0;">Create an account</h2>
+                <p style="color:#aaa; font-size:0.84rem; margin:0.25rem 0 0;">Join StayNest and start exploring</p>
+            </div>
+
             <form method="POST" action="/signup" novalidate class="needs-validation">
                 <div class="mb-3">
-                    <label for="username" class="form-label needs-validation">Username</label>
+                    <label for="username" class="form-label">Username</label>
                     <input type="text" class="form-control" id="username" name="username"
-                        placeholder="Enter your username" required>
-                    <div class="valid-feedback"> looks good!</div>
+                        placeholder="Choose a username" required>
+                    <div class="valid-feedback">Looks good!</div>
+                    <div class="invalid-feedback">Please choose a username.</div>
                 </div>
-
                 <div class="mb-3">
-                    <label for="email" class="form-label needs-validation">Email</label>
+                    <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" id="email" name="email"
-                        placeholder="Enter your email address" required>
-
+                        placeholder="your@email.com" required>
+                    <div class="invalid-feedback">Please enter a valid email.</div>
                 </div>
-
-                <div class="mb-3">
-                    <label for="password" class="form-label needs-validation">Password</label>
+                <div class="mb-4">
+                    <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" name="password"
-                        placeholder="Create a password" required>
+                        placeholder="Create a strong password" required>
+                    <div class="invalid-feedback">Please create a password.</div>
                 </div>
-
-                <button class="btn btn-dark " type="submit">Sign Up</button>
+                <button class="btn btn-dark w-100" type="submit" style="border-radius:0.6rem; padding:0.65rem;">
+                    Sign Up
+                </button>
+                <p class="text-center mt-3 mb-0" style="font-size:0.85rem; color:#888;">
+                    Already have an account? <a href="/login" style="color:#ff6f61; font-weight:600;">Login</a>
+                </p>
             </form>
         </div>
     </div>
+</div>
